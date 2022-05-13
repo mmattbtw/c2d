@@ -1,14 +1,10 @@
 {
-  "name": "crowdin-discord-webhooks",
-  "version": "1.0.0",
+  "name": "c2d",
+  "version": "1.1.0",
   "description": "Discord Webhooks for Crowdin Projects",
   "main": "index.js",
-  "author": "Pedro Fracassi <pedroluizfracassi@gmail.com>",
   "license": "MIT",
   "scripts": {
     "publish": "wrangler publish"
-  },
-  "devDependencies": {
-    "prettier": "^1.18.2"
   }
 }
