@@ -6,7 +6,7 @@
 **c2d** sends your Crowdin events to a Discord channel, no hosting or servers required! Simply point a Crowdin webhook to it and you're good to go!
 
 ## About this fork
-**c2d is a fork of [crowdin-discord-webhooks](https://github.com/SwitchbladeBot/crowdin-discord-webhooks)**, including but not limited to:
+**c2d is a fork of [crowdin-discord-webhooks](https://github.com/SwitchbladeBot/crowdin-discord-webhooks)**, that fixes some issues with the original:
 - Unsupported event types
 - Bundled webhooks not working at all
 - Odd formatting sometimes
