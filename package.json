@@ -5,6 +5,9 @@
   "main": "index.js",
   "author": "Pedro Fracassi <pedroluizfracassi@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "publish": "wrangler publish"
+  },
   "devDependencies": {
     "prettier": "^1.18.2"
   }

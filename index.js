@@ -1,74 +1,158 @@
-addEventListener('fetch', event => {
-  event.respondWith(handleRequest(event.request))
-})
+addEventListener('fetch', (event) => {
+    event.respondWith(handleRequest(event.request));
+});
 
 async function handleRequest(request) {
-    if (request.method === 'POST') {
-        const path = new URL(request.url).pathname
-        const crowdin = await request.json()
-        switch (crowdin.event) {
-            case 'file.translated':
-                await sendWebhook(path, `:white_check_mark: **${crowdin.file}** is now fully translated to \`${crowdin.language}\` ${getFileUrl(crowdin)}\n---`)
-                break
-            case 'file.approved':
-                await sendWebhook(path, `:ballot_box_with_check: The \`${crowdin.language}\` translation for **${crowdin.file}** is now fully approved. ${getFileUrl(crowdin)}\n---`)
-                break
-            case 'project.translated':
-                await sendWebhook(path, `:confetti_ball: All strings have been translated to \`${crowdin.language}\`! ${getProjectUrl(crowdin)}\n---`)
-                break
-            case 'project.approved':
-                await sendWebhook(path, `:tada: All \`${crowdin.language}\` strings have been approved! ${getProjectUrl(crowdin)}\n---`)
-                break
-            case 'translation.updated':
-                await sendWebhook(path, `:up: The translation for a \`${crowdin.language}\` string in **${crowdin.file}** has been updated by **${crowdin.user}** ${getFileUrl(crowdin)}\n---`)
-                break
-            case 'suggestion.added':
-                await sendWebhook(path, `:pencil: **${crowdin.user}** has added a new \`${crowdin.language}\` suggestion to a string in **${crowdin.file}**  ${getFileUrl(crowdin)}\n---`)
-                break
-            case 'suggestion.updated':
-                await sendWebhook(path, `:small_blue_diamond: **${crowdin.user}** has updated a \`${crowdin.language}\` suggestion to a string in **${crowdin.file}**  ${getFileUrl(crowdin)}\n---`)
-                break
-            case 'suggestion.deleted':
-                await sendWebhook(path, `:wastebasket: **${crowdin.user}** has deleted a \`${crowdin.language}\` suggestion to a string in **${crowdin.file}**  ${getFileUrl(crowdin)}\n---`)
-                break
-            case 'suggestion.approved':
-                await sendWebhook(path, `:thumbsup: **${crowdin.user}** has approved a \`${crowdin.language}\` suggestion to a string in **${crowdin.file}**  ${getFileUrl(crowdin)}\n---`)
-                break
-            case 'suggestion.disapproved':
-                await sendWebhook(path, `:thumbsdown: **${crowdin.user}** has unapproved a \`${crowdin.language}\` suggestion to a string in **${crowdin.file}**  ${getFileUrl(crowdin)}\n---`)
-                break
-            case 'string.added':
-                await sendWebhook(path, `:new: **${crowdin.user}** has added a new string to the project  ${getProjectUrl(crowdin)}\n---`)
-                break
-            case 'string.deleted':
-                await sendWebhook(path, `:wastebasket: **${crowdin.user}** has deleted a string from the project  ${getProjectUrl(crowdin)}\n---`)
-                break
-            case 'string.updated':
-                await sendWebhook(path, `:up: **${crowdin.user}** has updated a string in the project  ${getProjectUrl(crowdin)}\n---`)
-                break
+    if (request.method === "POST") {
+        const path = new URL(request.url).pathname;
+
+        /**
+         * @type { WebhookEvent | { events: Array<WebhookEvent> } }
+         */
+        const data = await request.json();
+
+        /**
+         * @type { string[] }
+         */
+        let content = [];
+
+        //content.push('```json\n' + JSON.stringify(data) + '```');
+
+        if (data.events === undefined) {
+            content.push('>>> **' + getTitle(data.event) + '** @ ' + data.project);
+            content.push(getMessage(data.event, data));
+        } else {
+            content.push('>>> **Latest events** @ ' + data.events[0].project);
+            data.events.forEach(element => {
+                content.push("• " + getMessage(element.event, element));
+            });
         }
-        return new Response('OK', {status: 200})
+
+        // Results in odd date, better leave it for later.
+        //content.push(`<t:${Date.now().valueOf()}:F>`);
+
+        sendWebhook(path, content.join("\n"));
+
+        return new Response('OK', { status: 200 });
+    }
+    return new Response('Resource Not Found', { status: 404 });
+}
+
+/**
+ * @param {string} event 
+ * @returns {string}
+*/
+function getTitle(event) {
+    switch (event) {
+        case 'file.translated':
+            return 'File translated'
+        case 'file.approved':
+            return 'File approved'
+        case 'file.updated':
+            return 'File updated'
+        case 'project.translated':
+            return 'Language fully translated'
+        case 'project.approved':
+            return 'Language fully approved'
+        case 'translation.updated':
+            return 'Translation updated'
+        case 'suggestion.added':
+            return 'Suggestion added'
+        case 'suggestion.updated':
+            return 'Suggestion updated'
+        case 'suggestion.deleted':
+            return 'Suggestion deleted'
+        case 'suggestion.approved':
+            return 'Suggestion approved'
+        case 'suggestion.disapproved':
+            return 'Suggestion disapproved'
+        case 'string.added':
+            return 'String added'
+        case 'string.deleted':
+            return 'String deleted'
+        case 'string.updated':
+            return 'String updated'
+        default:
+            return event
     }
 }
 
-function getFileUrl (crowdin) {
-    return `<https://crowdin.com/translate/${crowdin.project}/${crowdin.file_id}/en-${crowdin.language.replace('-', '').toLowerCase()}>`
+/**
+ * @param {string} eventType 
+ * @param {WebhookEvent} event 
+ * @returns {string}
+ */
+function getMessage(eventType, event) {
+    switch (eventType) {
+        case 'file.updated':
+            return `File ${getFileUrl(event)} translation updated by ${event.user}`
+        case 'file.translated':
+            return `File ${getFileUrl(event)} fully translated`
+        case 'file.approved':
+            return `File ${getFileUrl(event)} fully approved`
+        case 'project.translated':
+            return `All strings translated into \`${event.language}\` in ${getProjectUrl(event)}`
+        case 'project.approved':
+            return `All strings approved into \`${event.language}\` in ${getProjectUrl(event)}`
+        case 'translation.updated':
+            return `Translation in \`${event.language}\` updated by ${event.user} in ${getFileUrl(event)}`
+        case 'suggestion.added':
+            return `Suggestion in \`${event.language}\` added by ${event.user} in ${getFileUrl(event)}`
+        case 'suggestion.updated':
+            return `Suggestion in \`${event.language}\` updated by ${event.user} in ${getFileUrl(event)}`
+        case 'suggestion.deleted':
+            return `Suggestion in \`${event.language}\` deleted by ${event.user} in ${getFileUrl(event)}`
+        case 'suggestion.approved':
+            return `Suggestion in \`${event.language}\` approved by ${event.user} in ${getFileUrl(event)}`
+        case 'suggestion.disapproved':
+            return `Suggestion in \`${event.language}\` disapproved by ${event.user} in ${getFileUrl(event)}`
+        case 'string.added':
+            return `Source string **${event.string_identifier}** added to ${getProjectUrl(event)} by ${event.user}`
+        case 'string.deleted':
+            return `Source string **${event.string_identifier}** deleted from ${getProjectUrl(event)} by ${event.user}`
+        case 'string.updated':
+            return `Source string **${event.string_identifier}** updated in ${getProjectUrl(event)} by ${event.user}`
+        default:
+            return `Unknown event \`${eventType}\``
+    }
 }
 
-function getProjectUrl (crowdin) {
+
+/**
+ * @param {WebhookEvent} crowdin 
+ * @returns {string} 
+ */
+function getFileUrl(crowdin) {
+    if (crowdin.language !== undefined)
+        return `<https://crowdin.com/translate/${crowdin.project}/${crowdin.file_id}/en-${crowdin.language.replace('-', '').toLowerCase()}>`
+    else
+        return `<https://crowdin.com/translate/${crowdin.project}/${crowdin.file_id}>`
+}
+
+/**
+ * @param {WebhookEvent} crowdin 
+ * @returns {string}
+ */
+function getProjectUrl(crowdin) {
     return `<https://crowdin.com/project/${crowdin.project}>`
 }
 
-async function sendWebhook(path, message) {
-    return fetch(`https://discordapp.com/api/webhooks${path}`, {
+/**
+ * @param {string} path
+ * @param {string} content
+ */
+async function sendWebhook(path, content) {
+    const data = {
+        username: 'Crowdin Events 🌐',
+        avatar_url: 'https://support.crowdin.com/assets/logos/crowdin-dark-symbol.png',
+        content: content
+    };
+
+    fetch(`https://discordapp.com/api/webhooks${path}`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-            username: 'Crowdin',
-            avatar_url: 'https://pbs.twimg.com/profile_images/1123967384891613184/Ug8TZcdB.png',
-            content: message
-        })
-    })
+        body: JSON.stringify(data),
+    });
 }
