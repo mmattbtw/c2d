@@ -22,26 +22,26 @@ const titles = {
 }
 
 const messages = {
-    "file.updated":"{user} updated {file} ➡️",
-    "file.translated": "{file} is fully translated! 🥳",
-    "file.approved": "{file} is fully approved! 🥳",
-    "file.added": "{file} was added! ✅",
-    "file.reverted": "{file} was reverted! ⬅️",
-    "project.translated": "{project} is fully translated into **{language}**! 🥳",
-    "project.built": "{project} was built! 🏗️",
-    "project.approved": "{project} **{language}** translation is fully approved! 🥳",
-    "translation.updated": "{user} updated an translation in {file} ➡️",
-    "suggestion.added": "{user} added an suggestion to {language} in {file} ✅",
-    "suggestion.updated": "{user} updated an suggestion from {language} in {file} ➡️",
-    "suggestion.deleted": "{user} deleted an suggestion from {language} in {file} 🟥",
-    "suggestion.approved": "{user} approved an suggestion from {language} in {file} 👍",
-    "suggestion.disapproved":  "{user} disapproved an suggestion for {language} in {file} 👎",
-    "string.added": "{user} added {string} to {project} ✅",
-    "string.updated": "{user} updated {string} in {project} ➡️",
-    "string.deleted": "{user} deleted {string} from {project} 🟥",
-    "task.added": "Task {task_id} was added by {user} 📝",
-    "task.statusChanged": "Task {task_id} was updated from {old_status} to {new_status} by {user} 📝",
-    "task.deleted": "Task {task_id} was deleted by {user} 📝"
+    "file.updated":"**{user}** updated `{file}` ➡️",
+    "file.translated": "`{file}` is fully translated! 🥳",
+    "file.approved": "`{file}` is fully approved! 🥳",
+    "file.added": "`{file}` was added! ✅",
+    "file.reverted": "`{file}` was reverted! ⬅️",
+    "project.translated": "`{project}` is fully translated into `{language}`! 🥳",
+    "project.built": "`{project}` was built! 🏗️",
+    "project.approved": "`{project}` ``{language}`` translation is fully approved! 🥳",
+    "translation.updated": "**{user}** updated an translation in `{file}` ➡️",
+    "suggestion.added": "**{user}** added an suggestion to `{language}` in `{file}` ✅",
+    "suggestion.updated": "**{user}** updated an suggestion from `{language}` in `{file}` ➡️",
+    "suggestion.deleted": "**{user}** deleted an suggestion from `{language}` in `{file}` 🟥",
+    "suggestion.approved": "**{user}** approved an suggestion from `{language}` in `{file}` 👍",
+    "suggestion.disapproved":  "**{user}** disapproved an suggestion for `{language}` in `{file}` 👎",
+    "string.added": "**{user}** added {string_identifier} to `{project}` ✅",
+    "string.updated": "**{user}** updated {string_identifier} in `{project}` ➡️",
+    "string.deleted": "**{user}** deleted {string_identifier} from `{project}` 🟥",
+    "task.added": "Task **#{task_id}** was added by **{user}** 📝",
+    "task.statusChanged": "Task **#{task_id}** was updated from **\"{old_status}\"** to **\"{new_status}\"** by **{user}** 📝",
+    "task.deleted": "Task **#{task_id}** was deleted by **{user}** 📝"
 }
 
 function format(str, args) {
