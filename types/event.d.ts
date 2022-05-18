@@ -1,4 +1,4 @@
-type WebhookEvent = {
+export type WebhookEvent = {
     event: string,
     project: string,
     project_id: number,
