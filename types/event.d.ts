@@ -8,4 +8,8 @@ export type WebhookEvent = {
 
     user?: string
     user_id?: number
+
+    string_id?: number,
+    string_identifier?: string,
+    string_context?: string
 }

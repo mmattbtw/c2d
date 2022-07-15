@@ -1,4 +1,4 @@
-import { getTitle, getMessage } from "./messages";
+const { getTitle, getMessage } = require("./messages");
 
 addEventListener("fetch", (event) => {
     event.respondWith(handleRequest(event.request));
@@ -23,6 +23,7 @@ async function handleRequest(request) {
             embed.title = getTitle(data.event.event)
             embed.description = getMessage(data.event.event, data.event)
             embed.footer.text = "Sent by c2d"
+            console.debug("Event object:", JSON.stringify(data.event));
             embeds.push(embed);
         } else {
             if (data.events.length <= 1) {
@@ -31,6 +32,7 @@ async function handleRequest(request) {
                 embed.title = getTitle(data.events[0].event)
                 embed.description = getMessage(data.events[0].event, data.events[0])
                 embed.footer.text = "Sent by c2d"
+                console.debug("Event object:", JSON.stringify(data.events[0]));
                 embeds.push(embed);
             } else {
                 embed.author.name = 'The awesome people at ' + data.events[0].project;
@@ -38,6 +40,7 @@ async function handleRequest(request) {
                 embed.title = 'Latest events';
                 embed.footer.text = "Sent by c2d";
                 data.events.forEach(event => {
+                    console.debug("Event object:", JSON.stringify(event));
                     embed.fields.push({ name: getTitle(event.event), value: getMessage(event.event, event) });
                 });
                 embeds.push(embed);
@@ -65,7 +68,7 @@ function getProjectUrl(project) {
  */
 async function sendWebhook(path, embeds) {
     const data = {
-        username: "Crowdin Events",
+        username: "Crowdin",
         avatar_url: "https://support.crowdin.com/assets/logos/crowdin-dark-symbol.png",
         embeds: embeds
     };
