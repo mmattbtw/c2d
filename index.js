@@ -8,7 +8,7 @@ async function handleRequest(request) {
     if (request.method === "POST") {
         const path = new URL(request.url).pathname;
 
-        const data = await request.json();
+        const data = await request.json().message[0];
         console.log(data)
 
         let embeds = [];
