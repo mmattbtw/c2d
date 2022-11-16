@@ -1,2 +1,3 @@
 name = "Crowdis"
 main = "dist/crowdis.js"
+type = "webpack"
